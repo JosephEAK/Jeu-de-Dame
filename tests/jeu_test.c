@@ -14,6 +14,7 @@
 #define HUMAIN 0
 
 
+
 typedef struct Case {
     int line;
     int col;
@@ -23,6 +24,18 @@ typedef struct checkboard{
     int grid[GRIDSIZE][GRIDSIZE];
     int nb_white, nb_black;
 }checkboard;
+
+
+void show_line(int i, int checkboard[GRIDSIZE][GRIDSIZE]);
+void show_board(int checkboard[GRIDSIZE][GRIDSIZE]);
+void init_checkboard(checkboard* game);
+void check_obligatory_move(checkboard* game);
+void check_normal_move(checkboard* game, int turn);
+void game_update(checkboard* game, int turn);
+void automatic_move(checkboard* game, int a, int b, int c, int d, int e, int f);
+
+
+
 
 void show_line(int i, int checkboard[GRIDSIZE][GRIDSIZE]){
     int j;
@@ -49,6 +62,7 @@ void show_line(int i, int checkboard[GRIDSIZE][GRIDSIZE]){
     printf("|\n");
 }
 
+
 void show_board(int checkboard[GRIDSIZE][GRIDSIZE]){
     int i;
     printf("     0   1   2   3   4   5   6   7   8   9 \n");
@@ -58,6 +72,8 @@ void show_board(int checkboard[GRIDSIZE][GRIDSIZE]){
     }
     printf("   ----------------------------------------- \n");
     printf("     0   1   2   3   4   5   6   7   8   9 \n");
+
+    printf("\n\n");
 }
 
 void init_checkboard(checkboard* game){
@@ -101,7 +117,8 @@ void automatic_move(checkboard* game, int a, int b, int c, int d, int e, int f){
     game->grid[a][b] = CASE_VIDE;
     game->grid[c][d] = CASE_VIDE;
     game->grid[e][f] = WHITE_CHECKER;
-    //check_obligatory_move(game);
+    printf("\n");
+    check_obligatory_move(game);
 }
 
 void check_obligatory_move(checkboard* game){
@@ -160,87 +177,49 @@ void check_normal_move(checkboard* game, int turn){
             }
         }
     }
-    printf("\n");
-    show_board(game->grid);
+    printf("\n\n");
 }
 
-void move_IA(checkboard* game){
 
-    srand(time(NULL));
-    int i, j;
-    Case RAND, RAND_move;
-    RAND.line = rand()%10;
-    RAND.col  = rand()%10;
-    RAND_move.line = 1 ;
-    RAND_move.col  = rand()%2;
-
-    if (RAND_move.col == 1){
-        RAND_move.col =  1;
-    }else {
-        RAND_move.col = -1;
-    }
-
-    if(game->grid[RAND.line][RAND.col] == WHITE_CHECKER || CASE_VIDE){
-        printf("\nCe coup n'est pas tolérer, tu ne joue pas au dame là 1\n");
-    }else if ((game->grid[RAND.line+1][RAND.col-1] && game->grid[RAND.line+1][RAND.col+1]) != CASE_VIDE){
-        printf("\nCe coup n'est pas tolérer, tu ne joue pas au dame là 2\n");
-    }
-
-    if ((RAND_move.line != RAND.line + 1 ) || ((RAND_move.col != RAND.col - 1) && (RAND_move.col != RAND.col + 1))){
-        printf("\nCe coup n'est pas tolérer, tu ne joue pas au dame là 3\n");
-    }else{
-        for (i=0; i<10; i++){
-            for (j=0; j<10; j++){
-                if(i==RAND.line && j==RAND.col){
-                    game->grid[i][j] = CASE_VIDE;
-                    game->grid[RAND_move.line][RAND_move.col]= BLACK_CHECKER;
-                }
-            }
-        }
-    }
-    show_board(game->grid);
-}
 
 void game_update(checkboard* game, int turn){
-    int i,j;
-    Case choice, move;
 
-    if (turn == 1){
-        printf("\nChoisissez un pion, sa ligne puis sa colonne : \n");
-        scanf("%d %d", &choice.line, &choice.col);
+    //check_obligatory_move(game);
+    check_normal_move(game, turn);
 
-        if (game->grid[choice.line][choice.col] != WHITE_CHECKER){
-            printf("Tu n'as pas sélectionner de pion blanc\n");
-            game_update(game, turn);
-        }else if((game->grid[choice.line-1][choice.col-1] && game->grid[choice.line-1][choice.col+1]) == WHITE_CHECKER){
-            printf("Ce pion ne peut pas bouger, boloss !!\n");
-            game_update(game, turn);
-        }
+    //show_board(game->grid);
+    turn = -turn;
+    printf("%d \n", turn);
+}
 
-        printf("Choissisez la destination de ce pion, sa ligne puis sa colonne :\n\n");
-        scanf("%d %d", &move.line, &move.col);
+int main (){
 
-        if ((move.line != choice.line - 1 ) || ((move.col != choice.col - 1) && (move.col != choice.col + 1))){
-            printf("\nCe coup n'est pas tolérer, tu ne joue pas au dame là\n");
-            game_update(game, turn);
-        }
-        else{
-            for (i=0; i<10; i++){
-                for (j=0; j<10; j++){
-                    if(i==choice.line && j==choice.col){
-                        game->grid[i][j] = CASE_VIDE;
-                        game->grid[move.line][move.col]= WHITE_CHECKER;
-                    }
-                }
+    int turn = -1, i,j;
+    srand(time(NULL));
+    checkboard game;
+
+	init_checkboard(&game);
+
+
+    /*for(i=0;i<GRIDSIZE; i++){
+
+        if(i%2 == 0){j =1;}
+        else {j = 0;}
+
+        for (j=j; j<GRIDSIZE; j++){
+            if (game.grid[i][j] == BLACK_CHECKER){
+                game.grid[i][j] = (rand()%2)-1;
             }
         }
-        //check_obligatory_move(game);
-        check_normal_move(game, turn);
-    }else{
-        move_IA(game);
-        //check_obligatory_move(game);
-    }
+    }*/
 
-    turn = -turn;
-    game_update(game, turn);
+    
+
+    show_board(game.grid);
+
+    game_update(&game, turn);
+    
+
+	return 0;
+
 }
