@@ -1,5 +1,5 @@
 CC ?= gcc
-CFLAGS += -Wall --pedantic -Werror
+CFLAGS += -Wall --pedantic -g
 
 all:
 	$(CC) $(LDFLAGS) -o dames $(CFLAGS) dames.c main.c
